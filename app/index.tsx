@@ -1,62 +1,77 @@
-import { Text, View } from "react-native";
-import { firebase } from "./../firebaseConfig";
-import { useState, useEffect, SetStateAction } from "react";
-import { FirebaseAuthTypes } from "@react-native-firebase/auth";
+import React, { useState, useEffect } from "react";
+import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
+import { useFonts } from "expo-font";
+import AppLoading from "./components/AppLoading";
+import { router } from "expo-router";
 
-type User = FirebaseAuthTypes.User;
-type UserCredential = FirebaseAuthTypes.UserCredential;
+export default function App() {
+  const [fontsLoaded] = useFonts({
+    Roboto: require("./../assets/fonts/Roboto-Regular.ttf"),
+    RobotoBold: require("./../assets/fonts/Roboto-Bold.ttf"),
+  });
 
-export default function Index() {
-  const [user, setUser] = useState<User | null>(null);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  if (!fontsLoaded) {
+    return <AppLoading />;
+  }
 
-  useEffect(() => {
-    const unsubscribe = firebase.auth().onAuthStateChanged((user: User) => {
-      setUser(user);
-    });
-    return () => unsubscribe();
-  }, []);
-
-  const handleSignUp = () => {
-    firebase.auth().createUserWithEmailAndPassword(email, password)
-      .then((userCredential: UserCredential) => {
-        setUser(userCredential.user);
-      })
-      .catch((error: Error) => {
-        console.error(error);
-      });
-  };
-
-  const handleSignIn = () => {
-    firebase.auth().signInWithEmailAndPassword(email, password)
-      .then((userCredential: UserCredential) => {
-        setUser(userCredential.user);
-      })
-      .catch((error: Error) => {
-        console.error(error);
-      });
-  };
-
-  const handleSignOut = () => {
-    firebase.auth().signOut()
-      .then(() => {
-        setUser(null);
-      })
-      .catch((error: Error) => {
-        console.error(error);
-      });
-  };
-  
   return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <Text>Skill issue</Text>
+    <View style={styles.container}>
+      <Text style={styles.title}>nap-map</Text>
+      <Text style={styles.subtitle}>Sleep better. Dream better.</Text>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => router.push("/LoginPage")}
+      >
+        <Text style={styles.buttonText}>Login</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={() => router.push("/SignUpPage")}>
+        <Text style={styles.signupText}>
+          Don’t have an account? <Text style={styles.signupBold}>Sign In.</Text>
+        </Text>
+      </TouchableOpacity>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#B49FCC",
+    paddingHorizontal: 20,
+  },
+  title: {
+    fontSize: 64,
+    fontFamily: "RobotoBold",
+    color: "#FFFFFF",
+    marginBottom: 10,
+    marginTop: 200
+  },
+  subtitle: {
+    fontSize: 16,
+    fontFamily: "Roboto",
+    color: "#FFFFFF",
+    marginBottom: 190, // Increased spacing below subtitle
+  },
+  button: {
+    backgroundColor: "#FFFFFF",
+    paddingVertical: 10,
+    paddingHorizontal: 40,
+    borderRadius: 20,
+    marginBottom: 20, // Space below the Login button
+  },
+  buttonText: {
+    color: "#533A71",
+    fontSize: 20,
+    fontFamily: "RobotoBold",
+  },
+  signupText: {
+    fontSize: 16,
+    color: "#533A71",
+    fontFamily: "Roboto",
+  },
+  signupBold: {
+    fontFamily: "RobotoBold",
+  },
+});
