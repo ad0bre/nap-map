@@ -5,18 +5,20 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
+    "assets": ["./assets/fonts/"],
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.andrei.dobre.napmap"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.andrei.dobr3.napmap"
+      "package": "com.andrei.dobre.napmap"
     },
     "web": {
       "bundler": "metro",
@@ -33,7 +35,8 @@
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }
-      ]
+      ],
+      "expo-font"
     ],
     "experiments": {
       "typedRoutes": true
@@ -43,7 +46,7 @@
         "origin": false
       },
       "eas": {
-        "projectId": "5011edbd-1fc3-40eb-988a-3fcf1b759e9d"
+        "projectId": "d22f38a9-69f4-4ad9-8976-614490d0897c"
       }
     }
   }

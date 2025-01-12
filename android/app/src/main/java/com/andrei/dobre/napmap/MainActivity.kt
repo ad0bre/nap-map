@@ -1,4 +1,4 @@
-package com.andrei.dobr3.napmap
+package com.andrei.dobre.napmap
 import expo.modules.splashscreen.SplashScreenManager
 
 import android.os.Build

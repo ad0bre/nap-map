@@ -37,6 +37,6 @@ yarn-error.*
 
 app-example
 
-firebaseConfig.js
+firebaseConfig.ts
 
 google-services.json
