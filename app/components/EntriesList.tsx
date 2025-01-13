@@ -3,13 +3,16 @@ import {
     View, 
     Text,
     FlatList,
+    TouchableOpacity,
+    Modal,
 } from "react-native";
 import SleepEntry from "../types/sleepEntry";
 import React, { useContext } from "react";
 import { AppContext } from "../context/AppContext";
-import { collection, getDocs, query, where } from "firebase/firestore";
+import { collection, deleteDoc, doc, getDocs, query, where } from "firebase/firestore";
 import { db } from "./../../firebaseConfig";
 import { User } from "firebase/auth";
+import SleepReport from "./SleepReport";
 
 export default function EntriesList({
     user,
@@ -17,6 +20,18 @@ export default function EntriesList({
     user: User | null;
 }) {
     const { sleepEntries, setSleepEntries } = useContext(AppContext);  
+    const [selectedEntry, setSelectedEntry] = React.useState<SleepEntry | null>(null);
+    const [isModalVisible, setIsModalVisible] = React.useState(false);
+
+    const handlePressItem = (entry: SleepEntry) => {
+      setSelectedEntry(entry);
+      setIsModalVisible(true);
+    };
+
+    const handleCloseModal = () => {
+      setIsModalVisible(false);
+    };
+
     const fetchSleepEntries = async () => {
     if (!user?.uid) return;
     const entriesRef = collection(db, "sleepEntries");
@@ -64,16 +79,24 @@ export default function EntriesList({
             data={sleepEntries}
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => (
-              <View style={styles.sleepEntry}>
+              <TouchableOpacity
+                onPress={() => handlePressItem(item)}
+                style={styles.sleepEntry}
+              >
                 <Text style={styles.entryText}>
                   {item.dateStart.toDateString()}
                 </Text>
                 <Text style={styles.entryText}>{getTimeFromDates(item)}</Text>
                 <Text style={styles.entryText}>{item.status}</Text>
-              </View>
+              </TouchableOpacity>
             )}
             contentContainerStyle={styles.listContent}
             showsVerticalScrollIndicator={false}
+          />
+          <SleepReport
+            visible={isModalVisible}
+            entry={selectedEntry}
+            onClose={handleCloseModal}
           />
         </View>
       );
