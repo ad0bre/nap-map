@@ -8,6 +8,17 @@ import { LineChart } from "react-native-chart-kit";
 export default function ChartArea() {
     const { user, sleepEntries } = useContext(AppContext);
 
+    const getLastSevenEntries = (entries: SleepEntry[]): SleepEntry[] => {
+        if (!entries || entries.length === 0) return [];
+
+        const now = new Date();
+        const dateLimit = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+
+        const recentEntries = entries.filter((entry) => entry.dateStart >= dateLimit && entry.dateStart <= now);
+
+        return recentEntries.sort((a, b) => a.dateStart.getTime() - b.dateStart.getTime());
+    };
+
     function extractFirstName(email: string | null | undefined): string {
         if (email == null || email == undefined || !email.includes("@")) return "";
         const localPart = email.split("@")[0];
@@ -29,7 +40,7 @@ export default function ChartArea() {
         });
     }
 
-    const chartEntries = mapEntriesToData(sleepEntries);
+    const chartEntries = mapEntriesToData(getLastSevenEntries(sleepEntries));
 
     const chartData = {
         labels: chartEntries.map((entry) => entry.date.toDateString().split(" ")[0]),
