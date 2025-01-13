@@ -6,7 +6,8 @@
       "@/*": [
         "./*"
       ],
-      "@firebase/auth": ["./node_modules/@firebase/auth/dist/index.rn.d.ts"]
+      "@firebase/auth": ["./node_modules/@firebase/auth/dist/index.rn.d.ts"],
+      "@react-native-svg-charts": ["./node_modules/@types/react-native-svg-charts/index.d.ts"]
     }
   },
   "include": [

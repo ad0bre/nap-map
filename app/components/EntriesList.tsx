@@ -3,7 +3,6 @@ import {
     View, 
     Text,
     FlatList,
-    Dimensions,
 } from "react-native";
 import SleepEntry from "../types/sleepEntry";
 import React, { useContext } from "react";
@@ -11,15 +10,13 @@ import { AppContext } from "../context/AppContext";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "./../../firebaseConfig";
 import { User } from "firebase/auth";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function EntriesList({
     user,
 } : {
     user: User | null;
 }) {
-    const [sleepEntries, setSleepEntries] = React.useState<SleepEntry[]>([]);
-
+    const { sleepEntries, setSleepEntries } = useContext(AppContext);  
     const fetchSleepEntries = async () => {
     if (!user?.uid) return;
     const entriesRef = collection(db, "sleepEntries");
