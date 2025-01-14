@@ -9,8 +9,10 @@ import {
 } from "react-native";
 
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { addDoc, collection} from "firebase/firestore";
+import { addDoc, collection, getDocs, query, where} from "firebase/firestore";
 import { db } from "./../../firebaseConfig";
+import SleepEntry from "../types/sleepEntry";
+import PointsEntry from "../types/pointsEntry";
 
 const SleepEntryModal = ({
   isVisible,
@@ -26,23 +28,101 @@ const SleepEntryModal = ({
   const [status, setStatus] = useState("Rested");
   const [dreamSummary, setDreamSummary] = useState("");
   const [activePicker, setActivePicker] = useState<string | null>(null);
+  const [entryId, setEntryId] = useState("");
+  const [createdEntry, setCreatedEntry] = useState<SleepEntry | null>(null);
+
+  // const getSleepEntryId = async (entry: SleepEntry | null) => {
+  //   if (!entry) return;
+  //   const entriesRef = collection(db, "sleepEntries");
+  //   const entriesQuery = query(
+  //     entriesRef,
+  //     where("userId", "==", entry.userId),
+  //     where("dateStart", ">=", entry.dateStart),
+  //     where("dateEnd", "<=", entry.dateEnd)
+  //   );
+
+  //   const snapshot = await getDocs(entriesQuery);
+
+  //   const sleepEntry = snapshot.docs[0];
+
+  //   setEntryId(sleepEntry.id);
+  // };
 
   const openPicker = (picker: string) => {
     setActivePicker((prev) => (prev === picker ? null : picker)); // Toggle the picker
   };
 
+  const checkIfMinimum8Hours = (startDate: Date, endDate: Date) => {
+    if (!startDate || !endDate) return false;
+
+    const diffMs = endDate.getTime() - startDate.getTime(); // Difference in milliseconds
+    const hours = diffMs / (1000 * 60 * 60); // Convert to hours
+
+    return hours >= 8;
+  };
+
+  const checkIfWentToBedBefore11 = (date: Date) => {
+    if (!date) return false;
+
+    const isSameDay = dateStart.toDateString() === dateEnd.toDateString();
+    const hours = date.getHours(); // Get the hour (0-23)
+
+    return hours < 23 && !isSameDay;
+  };
+
+  const checkIfWokeUpBefore10 = (date: Date) => {
+    if (!date) return false;
+
+    const hours = date.getHours(); // Get the hour (0-23)
+    return hours < 10;
+  };
+
+  // const addPoints = (entry: SleepEntry | null) => {
+  //   if (!entry) return;
+  //   const isMinimum8Hours = checkIfMinimum8Hours(entry);
+  //   const wentToBedBefore11 = checkIfWentToBedBefore11(entry);
+  //   const wokeUpBefore10 = checkIfWokeUpBefore10(entry);
+  //   let points = 0;
+  //   if (isMinimum8Hours) points += 100;
+  //   if (wentToBedBefore11) points += 100;
+  //   if (wokeUpBefore10) points += 100;
+
+  //   const pointsEntry = {
+  //     min8Hours: isMinimum8Hours,
+  //     before10AM: wokeUpBefore10,
+  //     before11PM: wentToBedBefore11,
+  //     points: points,
+  //     sleepEntryId: entryId,
+  //     userId: entry.userId,
+  //   } as PointsEntry;
+
+  //   addDoc(collection(db, "pointsPerEntry"), pointsEntry);
+  // };
+
   const handleSubmit = () => {
+    const min8Hours = checkIfMinimum8Hours(dateStart, dateEnd);
+    const before11PM = checkIfWentToBedBefore11(dateStart);
+    const before10AM = checkIfWokeUpBefore10(dateEnd);
     const sleepEntry = {
       dateStart,
       dateEnd,
       status,
       dreamSummary,
       userId,
-    };
+      min8Hours,
+      before10AM,
+      before11PM,
+    } as SleepEntry;
     console.log(sleepEntry);
     addDoc(collection(db, "sleepEntries"), sleepEntry);
+    //setCreatedEntry(sleepEntry);
     toggleModal();
   };
+
+  // React.useEffect(() => {
+  //   getSleepEntryId(createdEntry);
+  //   addPoints(createdEntry);
+  // }, [createdEntry]);
 
   return (
     <Modal visible={isVisible} transparent={true} animationType="slide">

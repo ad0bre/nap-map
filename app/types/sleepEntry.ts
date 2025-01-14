@@ -5,4 +5,7 @@ export default interface SleepEntry{
     status: string,
     dreamSummary: string,
     userId: string,
+    min8Hours: boolean,
+    before10AM: boolean,
+    before11PM: boolean,
 }
